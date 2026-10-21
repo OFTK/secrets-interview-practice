@@ -2,9 +2,21 @@
 
 You just joined the SDK team of "Acme Secrets Manager". The team ships `secrets-client` 2.3, a Java library that applications embed to read secrets. It trades an API key for a short-lived access token, fetches secrets over REST, caches them in memory with a TTL, and retries transient failures. `FakeSecretsServer` runs the REST API in-process, so everything works on your laptop. Six tickets landed this week: see `TICKETS.md`.
 
+## How the debugging part works
+
+The bugs are described in `TICKETS.md`, like Jira tickets. The code does not mention them. For each ticket:
+
+1. Read the ticket in `TICKETS.md`.
+2. See the bug happen: choose **Demo SDK-10x** in IntelliJ's run dropdown (top right) and press Run, or run the failing test the ticket names.
+3. Find the code that causes it. Use the debugger.
+4. Fix it.
+5. Run the demo or the test again, and check that the bug is gone.
+
+Example: SDK-101 says secret values appear in the log. Run **Demo SDK-101**: the console prints a log line with the password in plain text. Find where that line is logged and why the password is in it, fix it, and the test `SecretTest` turns green.
+
 ## Run it
 
-- **IntelliJ:** File > Open > this folder. Let it load Maven. If it asks for a JDK, choose Download JDK, version 17 or newer.
+- **IntelliJ:** File > Open > this folder (`exercise-1-secrets-client`, not the repo root). Let it load Maven. If it asks for a JDK, choose Download JDK, version 17 or newer.
 - **Tests:** run the **All tests** configuration (top-right dropdown). 7 test cases fail on purpose. They belong to the tickets.
 - **Demos:** run **Demo SDK-101** to **Demo SDK-106**. Each one reproduces one ticket and prints what happened.
 - **Terminal:** `./mvnw test` and `./mvnw -q compile exec:java -Dexec.args=SDK-104`. On Windows PowerShell: `.\mvnw.cmd test`.

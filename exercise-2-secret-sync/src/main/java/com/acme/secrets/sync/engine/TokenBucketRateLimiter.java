@@ -15,7 +15,7 @@ public final class TokenBucketRateLimiter {
     private final int capacity;
     private final Clock clock;
     private final Sleeper sleeper;
-    private long tokens;
+    private double tokens;
     private long lastRefillMillis;
 
     public TokenBucketRateLimiter(int permitsPerSecond, int capacity, Clock clock, Sleeper sleeper) {
@@ -53,7 +53,7 @@ public final class TokenBucketRateLimiter {
     private void refill() {
         long now = clock.millis();
         long elapsedMillis = now - lastRefillMillis;
-        long newTokens = elapsedMillis * permitsPerSecond / 1000;
+        double newTokens = elapsedMillis * permitsPerSecond / 1000.0;
         tokens = Math.min(capacity, tokens + newTokens);
         lastRefillMillis = now;
     }

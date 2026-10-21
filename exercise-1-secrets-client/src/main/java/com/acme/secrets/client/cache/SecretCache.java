@@ -14,12 +14,12 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class SecretCache {
 
-    private final long ttl;
+    private final Duration ttl;
     private final Clock clock;
     private final Map<String, Entry> entries = new ConcurrentHashMap<>();
 
     public SecretCache(Duration ttl, Clock clock) {
-        this.ttl = ttl.toMillis();
+        this.ttl = ttl;
         this.clock = clock;
     }
 
@@ -36,7 +36,7 @@ public final class SecretCache {
     }
 
     public void put(Secret secret) {
-        entries.put(secret.id(), new Entry(secret, clock.instant().plusSeconds(ttl)));
+        entries.put(secret.id(), new Entry(secret, clock.instant().plus(ttl)));
     }
 
     public void invalidate(String secretId) {

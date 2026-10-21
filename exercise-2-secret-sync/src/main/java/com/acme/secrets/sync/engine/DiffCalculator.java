@@ -18,7 +18,7 @@ public final class DiffCalculator {
         List<SyncOperation> operations = new ArrayList<>();
         for (SecretRef source : sources) {
             String targetName = TargetNameMapper.toTargetName(source.id());
-            TargetSecret existing = remaining.remove(source.id());
+            TargetSecret existing = remaining.remove(targetName);
             if (existing == null) {
                 operations.add(SyncOperation.create(source.id(), targetName));
             } else if (existing.sourceVersion() != source.version()) {

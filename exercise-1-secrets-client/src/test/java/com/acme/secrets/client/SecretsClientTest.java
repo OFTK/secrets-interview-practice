@@ -37,6 +37,10 @@ class SecretsClientTest {
     private static final String OTHER_SECRET_ID = "prod/orders/api-key";
     private static final String OTHER_SECRET_VALUE = "orders-api-key-1";
     private static final String MISSING_SECRET_ID = "prod/orders/does-not-exist";
+    private static final String LIVE_KEY_ID = "payments/stripe#live";
+    private static final String TEST_KEY_ID = "payments/stripe";
+    private static final String TEST_KEY_VALUE = "sk_test_value";
+    private static final String ID_WITH_SPACE = "hr/db password";
     private static final List<String> BATCH_IDS = List.of(
             "prod/catalog/key-1", "prod/catalog/key-2", "prod/catalog/key-3",
             "prod/catalog/key-4", "prod/catalog/key-5");
@@ -127,6 +131,17 @@ class SecretsClientTest {
     }
 
     @ParameterizedTest
+    @ValueSource(strings = {LIVE_KEY_ID, ID_WITH_SPACE})
+    void getSecret_idWithHashOrSpace_returnsThatSecret(String secretId) {
+        server.putSecret(TEST_KEY_ID, TEST_KEY_VALUE);
+        server.putSecret(secretId, SECRET_VALUE);
+
+        Secret secret = client.getSecret(secretId);
+
+        assertThat(secret).extracting(Secret::id, Secret::value).containsExactly(secretId, SECRET_VALUE);
+    }
+
+    @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = {" ", "\t"})
     void getSecret_blankId_throwsIllegalArgument(String secretId) {
@@ -146,6 +161,19 @@ class SecretsClientTest {
 
         assertThat(server.tokenRequestCount()).isEqualTo(2);
         assertThat(server.totalSecretRequestCount()).as("secret requests, rejected ones included").isEqualTo(2);
+    }
+
+    @Test
+    void getSecret_tokenRevokedServerSide_refreshesTokenAndSucceeds() {
+        server.putSecret(SECRET_ID, SECRET_VALUE);
+        server.putSecret(OTHER_SECRET_ID, OTHER_SECRET_VALUE);
+        client.getSecret(SECRET_ID);
+        server.revokeAllTokens();
+
+        Secret secret = client.getSecret(OTHER_SECRET_ID);
+
+        assertThat(secret.value()).isEqualTo(OTHER_SECRET_VALUE);
+        assertThat(server.tokenRequestCount()).isEqualTo(2);
     }
 
     @Test

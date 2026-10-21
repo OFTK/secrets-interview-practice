@@ -10,7 +10,7 @@ public record RetryPolicy(int maxRetries, Duration initialBackoff, Duration maxB
     private static final int MAX_DOUBLINGS = 30;
 
     public boolean isRetryable(int status) {
-        return status >= 400;
+        return status == 429 || status >= 500;
     }
 
     /** Delay before retry number {@code attempt + 1}: doubles with each attempt, capped at {@code maxBackoff}. */

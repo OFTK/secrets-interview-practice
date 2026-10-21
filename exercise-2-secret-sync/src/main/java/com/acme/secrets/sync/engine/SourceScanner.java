@@ -5,7 +5,6 @@ import com.acme.secrets.sync.config.SyncPolicy;
 import com.acme.secrets.sync.source.Page;
 import com.acme.secrets.sync.source.SecretRef;
 import com.acme.secrets.sync.source.VaultClient;
-import com.acme.secrets.sync.source.VaultUnavailableException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -30,13 +29,7 @@ public final class SourceScanner {
 
     public List<SecretRef> scan(SyncPolicy policy) {
         Predicate<String> matches = GlobMatcher.compile(policy.sourcePattern());
-        List<SecretRef> all;
-        try {
-            all = listAll();
-        } catch (VaultUnavailableException e) {
-            log.warn("Could not list vault secrets for policy '{}': {}", policy.name(), e.getMessage());
-            return List.of();
-        }
+        List<SecretRef> all = listAll();
         List<SecretRef> matching = all.stream().filter(ref -> matches.test(ref.id())).toList();
         log.info("Scanned {} vault secrets, {} match policy '{}'", all.size(), matching.size(), policy.name());
         return matching;
@@ -45,7 +38,7 @@ public final class SourceScanner {
     private List<SecretRef> listAll() {
         Page<SecretRef> first = vault.listSecrets(0, pageSize);
         List<SecretRef> all = new ArrayList<>(first.items());
-        int pageCount = first.total() / pageSize;
+        int pageCount = (first.total() + pageSize - 1) / pageSize;
         for (int page = 1; page < pageCount; page++) {
             all.addAll(vault.listSecrets(page * pageSize, pageSize).items());
         }

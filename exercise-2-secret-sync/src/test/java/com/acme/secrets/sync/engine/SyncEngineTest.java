@@ -3,6 +3,7 @@ package com.acme.secrets.sync.engine;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.acme.secrets.sync.config.SyncPolicy;
+import com.acme.secrets.sync.engine.SyncReport.Status;
 import com.acme.secrets.sync.source.FakeVault;
 import com.acme.secrets.sync.target.FakeCloudSecretStore;
 import com.acme.secrets.sync.testing.FakeSleeper;
@@ -33,6 +34,11 @@ class SyncEngineTest {
             DB_PASSWORD, "db-password-value",
             STRIPE_API_KEY, "stripe-api-key-value",
             JWT_SIGNING_KEY, "jwt-signing-key-value");
+    private static final String WEBHOOK_SECRET_ID = "prod/payments/stripe webhook secret";
+    private static final String WEBHOOK_SECRET_VALUE = "whsec-value";
+    private static final String CREATE_WEBHOOK_SECRET = "CREATE prod/payments/stripe_webhook_secret";
+    private static final String TLS_BUNDLE = "prod/payments/tls-bundle";
+    private static final String OVERSIZED_VALUE = "A".repeat(70_000);
 
     private final MutableClock clock = new MutableClock(START);
     private final FakeSleeper sleeper = new FakeSleeper(clock);
@@ -77,6 +83,37 @@ class SyncEngineTest {
         engine.runCycle(PAYMENTS_POLICY);
 
         assertThat(target.secretNames()).containsExactlyInAnyOrder(DB_PASSWORD, JWT_SIGNING_KEY);
+    }
+
+    @Test
+    void runAll_vaultUnavailable_deletesNothing() {
+        storeInVault(PAYMENTS_SECRETS);
+        engine.runCycle(PAYMENTS_POLICY);
+        vault.setAvailable(false);
+
+        engine.runAll(List.of(PAYMENTS_POLICY));
+
+        assertThat(target.secretNames()).containsExactlyInAnyOrderElementsOf(PAYMENTS_SECRETS.keySet());
+    }
+
+    @Test
+    void runCycle_secretNameNeedsMapping_isStableAcrossCycles() {
+        vault.put(WEBHOOK_SECRET_ID, WEBHOOK_SECRET_VALUE);
+        engine.runCycle(PAYMENTS_POLICY);
+
+        engine.runCycle(PAYMENTS_POLICY);
+
+        assertThat(target.operations()).containsExactly(CREATE_WEBHOOK_SECRET);
+    }
+
+    @Test
+    void runCycle_targetRejectsSecret_reportsFailure() {
+        storeInVault(PAYMENTS_SECRETS);
+        vault.put(TLS_BUNDLE, OVERSIZED_VALUE);
+
+        SyncReport report = engine.runCycle(PAYMENTS_POLICY);
+
+        assertThat(report.status()).isEqualTo(Status.PARTIAL_FAILURE);
     }
 
     private void storeInVault(Map<String, String> secrets) {

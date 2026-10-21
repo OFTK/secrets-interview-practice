@@ -1,10 +1,12 @@
 package com.acme.secrets.sync.engine;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 import com.acme.secrets.sync.config.SyncPolicy;
 import com.acme.secrets.sync.source.FakeVault;
 import com.acme.secrets.sync.source.SecretRef;
+import com.acme.secrets.sync.source.VaultUnavailableException;
 import com.acme.secrets.sync.testing.MutableClock;
 import java.time.Instant;
 import java.util.List;
@@ -63,6 +65,16 @@ class SourceScannerTest {
         List<SecretRef> scanned = scanner.scan(PAYMENTS_POLICY);
 
         assertThat(scanned).extracting(SecretRef::id).containsExactly(PAYMENTS_DB_PASSWORD);
+    }
+
+    @Test
+    void scan_vaultUnavailable_throws() {
+        storePaymentsSecrets(PARTIAL_PAGE);
+        vault.setAvailable(false);
+
+        Throwable thrown = catchThrowable(() -> scanner.scan(PAYMENTS_POLICY));
+
+        assertThat(thrown).isInstanceOf(VaultUnavailableException.class);
     }
 
     private void storePaymentsSecrets(int count) {

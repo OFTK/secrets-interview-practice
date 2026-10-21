@@ -55,10 +55,10 @@ public final class ApiClient {
      */
     public Secret fetchSecret(String secretId) {
         URI uri = SecretPaths.secretUri(baseUri, secretId);
-        HttpRequest request = authorizedGet(uri);
         boolean tokenRefreshed = false;
         int retries = 0;
         while (true) {
+            HttpRequest request = authorizedGet(uri);
             HttpResponse<String> response = send(request);
             int status = response == null ? NO_RESPONSE : response.statusCode();
             if (status == 200) {

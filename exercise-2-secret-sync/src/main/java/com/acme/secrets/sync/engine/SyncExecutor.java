@@ -8,8 +8,10 @@ import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
@@ -52,7 +54,16 @@ public final class SyncExecutor implements AutoCloseable {
     private void applyAll(List<SyncOperation> ops, TargetStore target, SyncReport report) {
         List<Callable<Void>> tasks = ops.stream().map(op -> task(op, target, report)).toList();
         try {
-            pool.invokeAll(tasks);
+            List<Future<Void>> results = pool.invokeAll(tasks);
+            for (int i = 0; i < results.size(); i++) {
+                try {
+                    results.get(i).get();
+                } catch (ExecutionException e) {
+                    SyncOperation op = ops.get(i);
+                    report.recordFailed();
+                    log.error("Failed to {} {}: {}", op.kind(), op.targetName(), e.getCause().getMessage());
+                }
+            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new CancellationException("Interrupted while applying sync operations");

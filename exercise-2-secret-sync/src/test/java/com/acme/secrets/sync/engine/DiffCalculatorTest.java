@@ -16,6 +16,8 @@ class DiffCalculatorTest {
     private static final int SECOND_VERSION = 2;
     private static final String DB_PASSWORD = "prod/payments/db-password";
     private static final String RETIRED_API_KEY = "prod/payments/retired-api-key";
+    private static final String WEBHOOK_SECRET_ID = "prod/payments/stripe webhook secret";
+    private static final String WEBHOOK_SECRET_TARGET_NAME = "prod/payments/stripe_webhook_secret";
     private static final SyncPolicy DELETE_ORPHANS_POLICY =
             new SyncPolicy("payments-app", "prod/payments/*", "aws-payments-app", true);
     private static final SyncPolicy KEEP_ORPHANS_POLICY =
@@ -70,6 +72,16 @@ class DiffCalculatorTest {
                 new TargetSecret(DB_PASSWORD, FIRST_VERSION), new TargetSecret(RETIRED_API_KEY, FIRST_VERSION));
 
         SyncPlan plan = diff.plan(KEEP_ORPHANS_POLICY, sources, targets);
+
+        assertThat(plan.operations()).isEmpty();
+    }
+
+    @Test
+    void plan_sourceIdNeedsMapping_matchesExistingTargetSecret() {
+        List<SecretRef> sources = List.of(source(WEBHOOK_SECRET_ID, FIRST_VERSION));
+        List<TargetSecret> targets = List.of(new TargetSecret(WEBHOOK_SECRET_TARGET_NAME, FIRST_VERSION));
+
+        SyncPlan plan = diff.plan(DELETE_ORPHANS_POLICY, sources, targets);
 
         assertThat(plan.operations()).isEmpty();
     }

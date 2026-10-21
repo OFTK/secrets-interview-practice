@@ -38,6 +38,7 @@ public final class TokenProvider {
     private final Duration requestTimeout;
     private final Duration refreshSkew;
     private final Clock clock;
+    private final Object lock = new Object();
     private volatile AccessToken token;
 
     public TokenProvider(HttpClient httpClient, SecretsClientConfig config) {
@@ -51,11 +52,17 @@ public final class TokenProvider {
 
     public AccessToken getToken() {
         AccessToken current = token;
-        if (!isFresh(current)) {
-            current = fetchToken();
-            token = current;
+        if (isFresh(current)) {
+            return current;
         }
-        return current;
+        synchronized (lock) {
+            current = token;
+            if (!isFresh(current)) {
+                current = fetchToken();
+                token = current;
+            }
+            return current;
+        }
     }
 
     /** Forgets the current token, so the next {@link #getToken()} requests a new one. */

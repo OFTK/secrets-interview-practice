@@ -2,9 +2,21 @@
 
 You just joined the SecretSync team. SecretSync copies secrets from Acme Vault, the source of truth, into cloud secret stores, so cloud-native apps can read them with native APIs. It is similar in spirit to CyberArk Secrets Hub. A sync cycle runs per **sync policy** every few minutes: list the vault secrets that match the policy, compare them with what the target store holds, then create, update or delete secrets in the target. Tenant admins write the policies as YAML in the web console. In-memory fakes stand in for the vault and for an AWS-Secrets-Manager-like target. Six tickets landed this week: see `TICKETS.md`.
 
+## How the debugging part works
+
+The bugs are described in `TICKETS.md`, like Jira tickets. The code does not mention them. For each ticket:
+
+1. Read the ticket in `TICKETS.md`.
+2. See the bug happen: choose **Demo SYNC-20x** in IntelliJ's run dropdown (top right) and press Run, or run the failing test the ticket names.
+3. Find the code that causes it. Use the debugger.
+4. Fix it.
+5. Run the demo or the test again, and check that the bug is gone.
+
+Example: SYNC-201 says a customer with 250 secrets sees only 200 in the target. Run **Demo SYNC-201**: it prints how many secrets are missing. Find where the vault listing is paged and why the last page is skipped, fix it, and the test `SourceScannerTest` turns green.
+
 ## Run it
 
-- **IntelliJ:** File > Open > this folder. Let it load Maven. If it asks for a JDK, choose Download JDK, version 17 or newer.
+- **IntelliJ:** File > Open > this folder (`exercise-2-secret-sync`, not the repo root). Let it load Maven. If it asks for a JDK, choose Download JDK, version 17 or newer.
 - **Tests:** run the **All tests** configuration. 5 test cases fail on purpose. They belong to the tickets.
 - **Demos:** run **Demo SYNC-201** to **Demo SYNC-206**. Each one reproduces one ticket and prints what happened.
 - **Terminal:** `./mvnw test` and `./mvnw -q compile exec:java -Dexec.args=SYNC-203`. On Windows PowerShell: `.\mvnw.cmd test`.

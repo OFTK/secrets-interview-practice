@@ -3,8 +3,7 @@
 Root cause, fix, regression test and demo evidence for every ticket. See `git diff main solutions -- exercise-2-secret-sync` for the code changes.
 
 
-This snapshot is the correct version. The repo copy (`main`) is
-`/Users/ofektikotzky/nitzan/secrets-interview-practice/exercise-2-secret-sync`.
+This branch holds the correct version. `main` has the six bugs below.
 Line numbers refer to `main` unless marked "solution".
 All paths are relative to `src/main/java/com/acme/secrets/sync/`.
 

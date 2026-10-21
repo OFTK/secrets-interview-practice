@@ -10,13 +10,15 @@ The format this practices: two interviewers, about two hours, on a remote Window
 
 | When | What | Time |
 |---|---|---|
-| Now | Setup (below) | 15 min |
+| Now | Setup (below), including the keyboard setup | 15 min |
 | Now | Skim `cheatsheets/intellij-debugging.md` and `cheatsheets/ai-in-the-interview.md` | 10 min |
-| Tonight | Option 1 as a full timed mock (timeline in its README) | 2 h |
-| Tonight | Compare your work with the `solutions` branch | 20 min |
-| Tonight | Read `PREP_GUIDE.md` and `cheatsheets/design-checklist.md` | 20 min |
-| Morning | Two tickets from Option 2 as a warm-up, then the glossary in `PREP_GUIDE.md` | 30 min |
-| Before the call | Dry run with `cheatsheets/remote-windows-setup.md` | 10 min |
+| Tonight | Option 1 as a timed mock, in the "reported order" from its README: debugging, then research, then design and implement | 2 h, or 75 min (below) |
+| Tonight | Compare your work with the `solutions` branch | 15 min |
+| Morning | `PREP_GUIDE.md` sections 1-3 and the glossary | 15 min |
+| Morning | One or two tickets from Option 2 as a warm-up | 20 min |
+| Before the call | "First five minutes" in `cheatsheets/remote-windows-setup.md` | 10 min |
+
+Short on time tonight? Do a 75-minute version of Option 1: 35 min debugging (the two highest-severity tickets), 15 min research, 25 min design.
 
 Then sleep. A rested brain debugs faster than a crammed one.
 

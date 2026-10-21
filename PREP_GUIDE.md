@@ -167,7 +167,7 @@ There is no public mock that copies this exact format. That is why this repo exi
 - [interviewing.io](https://interviewing.io/): anonymous mocks with senior engineers, from $179 per session.
 - [Aced](https://www.aced.io/) (formerly Exponent, which now includes Pramp): free peer mocks with a monthly allowance, paid plans for more.
 - [Prepfully](https://prepfully.com/): independent coaches, roughly $79-$249 per hour.
-- [Baot](https://www.baot.org/): a free Israeli community for women in software, with volunteer mock interviews.
+- [Baot](https://www.baot.org/): a free Israeli community for women in software. Its mentoring program reportedly includes volunteer mock interviews (check the site).
 
 Skip the many "CyberArk interview questions" pages for PAM administrators. They are about operating the products, not about R&D interviews.
 

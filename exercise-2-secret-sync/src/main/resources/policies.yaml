@@ -1,0 +1,10 @@
+# Sync policies as authored by tenant admins in the web console.
+policies:
+  - name: payments-app
+    sourcePattern: "prod/payments/*"
+    targetId: aws-payments-app
+    deleteOrphans: true
+  - name: orders-app
+    sourcePattern: "prod/orders/**"
+    targetId: aws-orders-app
+    deleteOrphans: false

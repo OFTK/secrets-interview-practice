@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Demo SYNC-201" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.acme.secrets.sync.demo.SyncDemo" />
+    <module name="secret-sync" />
+    <option name="PROGRAM_PARAMETERS" value="SYNC-201" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

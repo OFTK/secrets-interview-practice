@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Demo SDK-102" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.acme.secrets.client.demo.DemoApp" />
+    <module name="secrets-client" />
+    <option name="PROGRAM_PARAMETERS" value="SDK-102" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

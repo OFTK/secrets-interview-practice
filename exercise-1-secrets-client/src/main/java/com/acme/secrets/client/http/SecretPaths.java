@@ -1,0 +1,25 @@
+package com.acme.secrets.client.http;
+
+import java.net.URI;
+
+/**
+ * Request URIs of the Secrets Manager REST API.
+ */
+public final class SecretPaths {
+
+    private SecretPaths() {
+    }
+
+    public static URI secretUri(URI baseUri, String secretId) {
+        return URI.create(withoutTrailingSlash(baseUri) + "/v1/secrets/" + secretId);
+    }
+
+    public static URI tokenUri(URI baseUri) {
+        return URI.create(withoutTrailingSlash(baseUri) + "/v1/auth/token");
+    }
+
+    private static String withoutTrailingSlash(URI baseUri) {
+        String base = baseUri.toString();
+        return base.endsWith("/") ? base.substring(0, base.length() - 1) : base;
+    }
+}
